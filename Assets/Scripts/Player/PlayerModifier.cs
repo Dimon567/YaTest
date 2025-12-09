@@ -12,6 +12,8 @@ public class PlayerModifier : MonoBehaviour
 
     [SerializeField] Transform _colliderTransform;
 
+    [SerializeField] AudioSource increaceSound;
+
     float _baseHeightSpine;
     float _widthMultiplier = 0.0005f;
     float _heightMultiplier = 0.01f;
@@ -26,15 +28,35 @@ public class PlayerModifier : MonoBehaviour
 
     public void AddWidth(int value)
     {
+        if (_width + value < 0)
+        {
+            Die();
+            return;
+        }
+
+        if (value > 0)
+        {
+            increaceSound.Play();
+        }
+
         _width += value;
         UpdateWidth();
     }
     public void AddHeight(int value) 
     { 
-        _height += value;
+        if (_height + value < 0)
+        {
+            Die();
+            return;
+        }
 
+        if(value > 0)
+        {
+            increaceSound.Play();
+        }
+            
+        _height += value;
         UpdateHeight();
-        Debug.Log("Add height");
     }
 
     public void SetWidth(int value)
@@ -51,7 +73,7 @@ public class PlayerModifier : MonoBehaviour
 
     public void HitBarrier()
     {
-        if (_height - 50 >= 0)
+        if(_height - 50 >= 0)
         {
             _height -= 50;
             UpdateHeight();
@@ -75,6 +97,7 @@ public class PlayerModifier : MonoBehaviour
     public void UpdateHeight()
     {
         float offsetY = _height * _heightMultiplier + _baseHeightSpine;
+        _colliderTransform.localScale = new Vector3(1, 1f + _height * _heightMultiplier, 1);
         _topSpine.position = _bottomSpine.position + new Vector3(0, offsetY, 0);
     }
 
